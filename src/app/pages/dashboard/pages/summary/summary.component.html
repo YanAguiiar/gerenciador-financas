@@ -1,0 +1,27 @@
+<h2>Resumo Mensal</h2>
+
+<div class="summary-boxes">
+  <div class="box receita">
+    <h3>Total de Receitas</h3>
+    <p>R$ {{ totalReceita | number : "1.2-2" }}</p>
+  </div>
+  <div class="box despesa">
+    <h3>Total de Despesas</h3>
+    <p>R$ {{ totalDespesa | number : "1.2-2" }}</p>
+  </div>
+  <div class="box saldo">
+    <h3>Saldo Final</h3>
+    <p>R$ {{ saldo | number : "1.2-2" }}</p>
+  </div>
+</div>
+
+<div class="resumo-ia">
+  <button (click)="gerarResumoIA()" [disabled]="loading">
+    {{ loading ? "Gerando..." : "Gerar Resumo por IA" }}
+  </button>
+
+  <div *ngIf="resumoIA" class="ia-result">
+    <h4>Resumo por IA:</h4>
+    <p [innerHTML]="resumoIA"></p>
+  </div>
+</div>

@@ -1,1 +1,21 @@
-<p>dashboard works!</p>
+<div class="dashboard">
+  <nav class="sidebar">
+    <h3>Menu</h3>
+    <ul>
+      <li>
+        <a routerLink="transactions" routerLinkActive="active">Lançamentos</a>
+      </li>
+      <li>
+        <a routerLink="categories" routerLinkActive="active">Categorias</a>
+      </li>
+      <li><a routerLink="summary" routerLinkActive="active">Resumo</a></li>
+    </ul>
+  </nav>
+
+  <main class="content">
+    <header class="header">
+      <h1>Dashboard</h1>
+    </header>
+    <router-outlet></router-outlet>
+  </main>
+</div>

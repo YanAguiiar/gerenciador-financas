@@ -15,7 +15,8 @@ export const routes: Routes = [
   },
   {
     path:'dashboard',
-    component: DashboardComponent
+    component: DashboardComponent,
+    loadChildren: () => import('./pages/dashboard/dashboard.module').then(m => m.DashboardModule)
   },
   {
     path: 'register',
