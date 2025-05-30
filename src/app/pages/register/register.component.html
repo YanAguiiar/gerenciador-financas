@@ -1,0 +1,35 @@
+<div class="register-container">
+  <form
+    (ngSubmit)="onRegister()"
+    [formGroup]="registerForm"
+    class="register-form"
+  >
+    <h2>Criar Conta</h2>
+
+    <div class="form-group">
+      <label for="name">Nome</label>
+      <input type="text" id="name" formControlName="name" required />
+    </div>
+
+    <div class="form-group">
+      <label for="email">E-mail</label>
+      <input type="email" id="email" formControlName="email" required />
+    </div>
+
+    <div class="form-group">
+      <label for="password">Senha</label>
+      <input
+        type="password"
+        id="password"
+        formControlName="password"
+        required
+      />
+    </div>
+
+    <button type="submit" [disabled]="registerForm.invalid">Cadastrar</button>
+
+    <p class="login-link">
+      Já tem uma conta? <a routerLink="/login">Faça login</a>
+    </p>
+  </form>
+</div>
