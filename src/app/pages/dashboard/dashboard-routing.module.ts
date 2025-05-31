@@ -4,16 +4,29 @@ import { DashboardComponent } from './dashboard.component';
 import { TransactionsComponent } from './pages/transactions/transactions.component';
 import { CategoriesComponent } from './pages/categories/categories.component';
 import { SummaryComponent } from './pages/summary/summary.component';
+import { AuthGuard } from '../../core/guards/auth.guard';
 
 const routes: Routes = [
-    { path: 'transactions', component: TransactionsComponent},
-    { path: 'categories', component: CategoriesComponent},
-    { path: 'summary', component: SummaryComponent},
-    { path: '', redirectTo: 'summary', pathMatch: 'full' }
-  ];
+  {
+    path: 'transactions',
+    component: TransactionsComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'categories',
+    component: CategoriesComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'summary',
+    component: SummaryComponent,
+    canActivate: [AuthGuard]
+  },
+  { path: '', redirectTo: 'summary', pathMatch: 'full' }
+];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class DashboardRoutingModule {}
+export class DashboardRoutingModule { }

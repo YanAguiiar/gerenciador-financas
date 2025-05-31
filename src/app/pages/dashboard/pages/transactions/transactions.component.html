@@ -7,6 +7,49 @@
     </button>
   </div>
 
+  <!-- Toolbar de Filtros -->
+  <div class="bg-white p-4 rounded-lg shadow-sm mb-6">
+    <form [formGroup]="filterForm" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="flex flex-col">
+        <label class="text-sm font-medium text-gray-700 mb-1">Data Inicial</label>
+        <input type="date" formControlName="startDate" class="p-2 border rounded-md">
+      </div>
+
+      <div class="flex flex-col">
+        <label class="text-sm font-medium text-gray-700 mb-1">Data Final</label>
+        <input type="date" formControlName="endDate" class="p-2 border rounded-md">
+      </div>
+
+      <div class="flex flex-col">
+        <label class="text-sm font-medium text-gray-700 mb-1">Categoria</label>
+        <select formControlName="category" class="p-2 border rounded-md">
+          <option value="">Todas</option>
+          <option [value]="category.id" *ngFor="let category of categories">{{category.name}}</option>
+        </select>
+      </div>
+
+      <div class="flex flex-col">
+        <label class="text-sm font-medium text-gray-700 mb-1">Tipo</label>
+        <select formControlName="type" class="p-2 border rounded-md">
+          <option value="">Todos</option>
+          <option value="RECEITA">Receita</option>
+          <option value="DESPESA">Despesa</option>
+        </select>
+      </div>
+
+      <div class="md:col-span-4 flex justify-end gap-2 mt-4">
+        <button type="button" (click)="resetFilters()" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-md flex items-center gap-1">
+          <mat-icon>clear</mat-icon>
+          Limpar Filtros
+        </button>
+        <button type="button" (click)="applyFilters()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md flex items-center gap-1">
+          <mat-icon>filter_list</mat-icon>
+          Filtrar
+        </button>
+      </div>
+    </form>
+  </div>
+
   <!-- Formulário de Edição/Criação -->
   <div *ngIf="isEditing" class="bg-white p-6 rounded-lg shadow-lg mb-6">
     <h3 class="text-lg font-semibold mb-4">{{ editingTransaction.id ? 'Editar' : 'Nova' }} Transação</h3>
@@ -53,43 +96,70 @@
   </div>
 
   <!-- Tabela de Transações -->
-  <div class="overflow-x-auto">
-    <table class="min-w-full bg-white rounded-lg overflow-hidden shadow-lg">
-      <thead class="bg-gray-50">
-        <tr>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Título</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Valor</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categoria</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-gray-200">
-        <tr *ngFor="let transaction of transactions">
-          <td class="px-6 py-4">{{transaction.title}}</td>
-          <td class="px-6 py-4" [ngClass]="{'text-green-600': transaction.type === 'RECEITA', 'text-red-600': transaction.type === 'DESPESA'}">
-            {{transaction.value | currency:'BRL'}}
-          </td>
-          <td class="px-6 py-4">
-            <span [ngClass]="{'bg-green-100 text-green-800': transaction.type === 'RECEITA', 'bg-red-100 text-red-800': transaction.type === 'DESPESA'}"
-                  class="px-2 py-1 text-xs rounded-full">
-              {{transaction.type === 'RECEITA' ? 'Receita' : 'Despesa'}}
-            </span>
-          </td>
-          <td class="px-6 py-4">{{transaction.date | date:'dd/MM/yyyy'}}</td>
-          <td class="px-6 py-4">{{getCategoryName(transaction.category)}}</td>
-          <td class="px-6 py-4">
-            <button (click)="editTransaction(transaction)" class="text-blue-600 hover:text-blue-800 mr-2">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button (click)="deleteTransaction(transaction.id)" class="text-red-600 hover:text-red-800">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="bg-white rounded-lg shadow-lg">
+    <div class="overflow-x-auto">
+      <div class="h-[calc(100vh-460px)] overflow-y-auto">
+        <table mat-table [dataSource]="filteredTransactions" class="min-w-full">
+          <!-- Título Column -->
+          <ng-container matColumnDef="title">
+            <th mat-header-cell *matHeaderCellDef class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50"> Título </th>
+            <td mat-cell *matCellDef="let transaction" class="px-6 py-4"> {{transaction.title}} </td>
+          </ng-container>
+
+          <!-- Valor Column -->
+          <ng-container matColumnDef="value">
+            <th mat-header-cell *matHeaderCellDef class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50"> Valor </th>
+            <td mat-cell *matCellDef="let transaction" class="px-6 py-4" [ngClass]="{'text-green-600': transaction.type === 'RECEITA', 'text-red-600': transaction.type === 'DESPESA'}">
+              {{transaction.value | currency:'BRL'}}
+            </td>
+          </ng-container>
+
+          <!-- Tipo Column -->
+          <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50"> Tipo </th>
+            <td mat-cell *matCellDef="let transaction" class="px-6 py-4">
+              <span [ngClass]="{'bg-green-100 text-green-800': transaction.type === 'RECEITA', 'bg-red-100 text-red-800': transaction.type === 'DESPESA'}"
+                    class="px-2 py-1 text-xs rounded-full">
+                {{transaction.type === 'RECEITA' ? 'Receita' : 'Despesa'}}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Data Column -->
+          <ng-container matColumnDef="date">
+            <th mat-header-cell *matHeaderCellDef class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50"> Data </th>
+            <td mat-cell *matCellDef="let transaction" class="px-6 py-4"> {{transaction.date | date:'dd/MM/yyyy'}} </td>
+          </ng-container>
+
+          <!-- Categoria Column -->
+          <ng-container matColumnDef="category">
+            <th mat-header-cell *matHeaderCellDef class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50"> Categoria </th>
+            <td mat-cell *matCellDef="let transaction" class="px-6 py-4"> {{getCategoryName(transaction.category)}} </td>
+          </ng-container>
+
+          <!-- Ações Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50"> Ações </th>
+            <td mat-cell *matCellDef="let transaction" class="px-6 py-4">
+              <button (click)="editTransaction(transaction)" class="text-blue-600 hover:text-blue-800 mr-2">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button (click)="deleteTransaction(transaction.id)" class="text-red-600 hover:text-red-800">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true" class="bg-gray-50"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-gray-50"></tr>
+        </table>
+      </div>
+    </div>
+    <mat-paginator [pageSize]="10" 
+                   [pageSizeOptions]="[10, 20, 50]"
+                   showFirstLastButtons
+                   class="border-t">
+    </mat-paginator>
   </div>
 </div>
 

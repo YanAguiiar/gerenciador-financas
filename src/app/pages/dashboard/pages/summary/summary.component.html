@@ -1,27 +1,89 @@
-<h2>Resumo Mensal</h2>
+<div class="dashboard-container">
+  <h2 class="dashboard-title">Resumo Financeiro</h2>
 
-<div class="summary-boxes">
-  <div class="box receita">
-    <h3>Total de Receitas</h3>
-    <p>R$ {{ totalReceita | number : "1.2-2" }}</p>
-  </div>
-  <div class="box despesa">
-    <h3>Total de Despesas</h3>
-    <p>R$ {{ totalDespesa | number : "1.2-2" }}</p>
-  </div>
-  <div class="box saldo">
-    <h3>Saldo Final</h3>
-    <p>R$ {{ saldo | number : "1.2-2" }}</p>
-  </div>
-</div>
+  <!-- Cards principais -->
+  <div class="summary-boxes">
+    <div class="box receita">
+      <div class="box-icon">
+        <i class="fas fa-arrow-up"></i>
+      </div>
+      <div class="box-content">
+        <h3>Total de Receitas</h3>
+        <p class="amount">R$ {{ totalReceita | number : "1.2-2" }}</p>
+        <p class="trend" *ngIf="receitaTendencia">
+          <i [class]="receitaTendencia > 0 ? 'fas fa-caret-up' : 'fas fa-caret-down'"></i>
+          {{ receitaTendencia }}% em relação ao período anterior
+        </p>
+      </div>
+    </div>
 
-<div class="resumo-ia">
-  <button (click)="gerarResumoIA()" [disabled]="loading">
-    {{ loading ? "Gerando..." : "Gerar Resumo por IA" }}
-  </button>
+    <div class="box despesa">
+      <div class="box-icon">
+        <i class="fas fa-arrow-down"></i>
+      </div>
+      <div class="box-content">
+        <h3>Total de Despesas</h3>
+        <p class="amount">R$ {{ totalDespesa | number : "1.2-2" }}</p>
+        <p class="trend" *ngIf="despesaTendencia">
+          <i [class]="despesaTendencia > 0 ? 'fas fa-caret-up' : 'fas fa-caret-down'"></i>
+          {{ despesaTendencia }}% em relação ao período anterior
+        </p>
+      </div>
+    </div>
 
-  <div *ngIf="resumoIA" class="ia-result">
-    <h4>Resumo por IA:</h4>
-    <p [innerHTML]="resumoIA"></p>
+    <div class="box saldo">
+      <div class="box-icon">
+        <i class="fas fa-wallet"></i>
+      </div>
+      <div class="box-content">
+        <h3>Saldo Final</h3>
+        <p class="amount">R$ {{ saldo | number : "1.2-2" }}</p>
+        <p class="trend" *ngIf="saldoTendencia">
+          <i [class]="saldoTendencia > 0 ? 'fas fa-caret-up' : 'fas fa-caret-down'"></i>
+          {{ saldoTendencia }}% em relação ao período anterior
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estatísticas adicionais -->
+  <div class="stats-grid grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="stats-card">
+      <h4>Maiores Despesas</h4>
+      <div class="stats-list" *ngIf="maioresDespesas">
+        <div class="stats-item" *ngFor="let despesa of maioresDespesas">
+          <span class="item-name">{{ despesa.nome }}</span>
+          <span class="item-value">R$ {{ despesa.valor | number : "1.2-2" }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-card">
+      <h4>Categorias Principais</h4>
+      <div class="stats-list" *ngIf="categoriasPrincipais">
+        <div class="stats-item" *ngFor="let categoria of categoriasPrincipais">
+          <span class="item-name">{{ categoria.categoria }}</span>
+          <span class="item-value">{{ categoria.percentual }}%</span>
+          <div class="progress-bar">
+            <div class="progress" [style.width]="categoria.percentual + '%'"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
+  </div>
+
+  <!-- Resumo IA -->
+  <div class="resumo-ia">
+    <button class="ia-button" (click)="gerarResumoIA()" [disabled]="loading">
+      <i class="fas fa-robot"></i>
+      {{ loading ? "Gerando..." : "Gerar Resumo por IA" }}
+    </button>
+
+    <div *ngIf="resumoIA" class="ia-result">
+      <h4>Análise Inteligente:</h4>
+      <p [innerHTML]="resumoIA"></p>
+    </div>
   </div>
 </div>

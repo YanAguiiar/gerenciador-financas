@@ -1,13 +1,37 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TransactionsService } from './transactions.service';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatPaginatorModule, MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { TransactionDialogComponent } from './transaction-dialog/transaction-dialog.component';
+
+export class CustomPaginatorIntl extends MatPaginatorIntl {
+  override itemsPerPageLabel = 'Itens por página:';
+  override nextPageLabel = 'Próxima página';
+  override previousPageLabel = 'Página anterior';
+  override firstPageLabel = 'Primeira página';
+  override lastPageLabel = 'Última página';
+
+  override getRangeLabel = (page: number, pageSize: number, length: number) => {
+    if (length === 0 || pageSize === 0) {
+      return `0 de ${length}`;
+    }
+
+    length = Math.max(length, 0);
+    const startIndex = page * pageSize;
+    const endIndex = startIndex < length ? Math.min(startIndex + pageSize, length) : startIndex + pageSize;
+
+    return `${startIndex + 1} - ${endIndex} de ${length}`;
+  };
+}
 
 interface Transaction {
   id: number;
@@ -35,18 +59,29 @@ interface Category {
     MatIconModule,
     MatDialogModule,
     MatSnackBarModule,
+    MatSelectModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatPaginatorModule,
     TransactionDialogComponent
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: CustomPaginatorIntl }
   ],
   templateUrl: './transactions.component.html',
   styleUrl: './transactions.component.css'
 })
-export class TransactionsComponent implements OnInit {
+export class TransactionsComponent implements OnInit, AfterViewInit {
   transactions: Transaction[] = [];
+  filteredTransactions: MatTableDataSource<Transaction>;
   categories: any[] = [];
   isEditing = false;
   editingTransaction: Partial<Transaction> = {};
   transactionForm: FormGroup;
+  filterForm: FormGroup;
   displayedColumns: string[] = ['title', 'value', 'type', 'date', 'category', 'actions'];
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   constructor(
     private transactionsService: TransactionsService,
@@ -54,12 +89,18 @@ export class TransactionsComponent implements OnInit {
     private snackBar: MatSnackBar,
     private fb: FormBuilder
   ) {
+    this.filteredTransactions = new MatTableDataSource<Transaction>([]);
     this.transactionForm = this.createForm();
+    this.filterForm = this.createFilterForm();
   }
 
   ngOnInit() {
     this.loadTransactions();
     this.loadCategories();
+  }
+
+  ngAfterViewInit() {
+    this.filteredTransactions.paginator = this.paginator;
   }
 
   createForm(): FormGroup {
@@ -73,6 +114,15 @@ export class TransactionsComponent implements OnInit {
     });
   }
 
+  createFilterForm(): FormGroup {
+    return this.fb.group({
+      startDate: [''],
+      endDate: [''],
+      category: [''],
+      type: ['']
+    });
+  }
+
   loadTransactions() {
     this.transactionsService.getTransactions().subscribe({
       next: (data: any[]) => {
@@ -80,6 +130,7 @@ export class TransactionsComponent implements OnInit {
           ...transaction,
           category: transaction.category.id
         }));
+        this.filteredTransactions.data = this.transactions;
       },
       error: (error) => {
         this.snackBar.open('Erro ao carregar transações', 'Fechar', {
@@ -215,5 +266,42 @@ export class TransactionsComponent implements OnInit {
   getCategoryName(categoryId: number): string {
     const category = this.categories.find(c => c.id === categoryId);
     return category ? category.name : '';
+  }
+
+  applyFilters() {
+    const filters = this.filterForm.value;
+
+    const filteredData = this.transactions.filter(transaction => {
+      let match = true;
+
+      if (filters.startDate) {
+        match = match && new Date(transaction.date) >= new Date(filters.startDate);
+      }
+      if (filters.endDate) {
+        match = match && new Date(transaction.date) <= new Date(filters.endDate);
+      }
+      if (filters.category) {
+        match = match && Number(transaction.category) === Number(filters.category);
+      }
+      if (filters.type) {
+        match = match && transaction.type === filters.type;
+      }
+
+      return match;
+    });
+
+    this.filteredTransactions.data = filteredData;
+
+    if (this.paginator) {
+      this.paginator.firstPage();
+    }
+  }
+
+  resetFilters() {
+    this.filterForm.reset();
+    this.filteredTransactions.data = this.transactions;
+    if (this.paginator) {
+      this.paginator.firstPage();
+    }
   }
 }

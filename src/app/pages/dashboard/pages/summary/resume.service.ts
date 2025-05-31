@@ -1,31 +1,45 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+export interface ResumoFinanceiro {
+  totalReceitas: number;
+  totalDespesas: number;
+  saldoFinal: number;
+  variacoes: {
+    receitas: number;
+    despesas: number;
+    saldo: number;
+  };
+}
+
+export interface DadosResumo {
+  resumoFinanceiro: ResumoFinanceiro;
+  maioresDespesas: {
+    nome: string;
+    valor: number;
+  }[];
+  categoriasPrincipais: {
+    categoria: string;
+    percentual: number;
+  }[];
+  metasFinanceiras: {
+    nome: string;
+    percentual: number;
+  }[];
+}
 
 @Injectable({ providedIn: 'root' })
 export class ResumeService {
-  private apiUrl = 'http://localhost:3001/api/report/resume'
+  private apiUrl = 'http://localhost:3001/api/report'
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
-  getResumo(): Observable<{ totalReceitas: number, totalDespesas: number, saldo: number }> {
-    return this.http.get<{ resume: any }>(this.apiUrl)
-      .pipe(
-        map(res => ({
-          totalReceitas: res.resume.totalReceita,
-          totalDespesas: res.resume.totalDespesa,
-          saldo: res.resume.saldoFinal
-        }))
-      );
+  getStats(): Observable<DadosResumo> {
+    return this.http.get<DadosResumo>(this.apiUrl + '/stats');
   }
 
   getResumoIA(): Observable<{ resumeIA: string }> {
-    return this.http.get(this.apiUrl + '/ia', { responseType: 'text' }).pipe(
-      map((response: string) => {
-        const parsed = JSON.parse(response);
-        return { resumeIA: parsed.resume };
-      })
-    );
+    return this.http.get<{ resumeIA: string }>(this.apiUrl + '/resume-ia');
   }
-  
 }

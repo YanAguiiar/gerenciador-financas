@@ -1,5 +1,20 @@
+<header class="bg-white shadow-md p-4 flex justify-between items-center">
+  <div class="flex items-center gap-4">
+    <button mat-icon-button (click)="toggleSidebar()">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <h1 class="text-2xl font-bold text-gray-800">Gerenciador de Finanças Pessoais</h1>
+  </div>
+  <div class="flex items-center gap-4">
+    <span class="text-gray-600">Olá, {{ userName }}</span>
+    <button mat-icon-button (click)="logout()" class="text-gray-600 hover:text-red-600" title="Sair">
+      <mat-icon>logout</mat-icon>
+    </button>
+  </div>
+</header>
+
 <div class="dashboard">
-  <nav class="sidebar">
+  <nav class="sidebar" [class.hidden]="!isSidebarOpen">
     <h3>Menu</h3>
     <ul>
       <li>
@@ -12,10 +27,7 @@
     </ul>
   </nav>
 
-  <main class="content">
-    <header class="header">
-      <h1>Dashboard</h1>
-    </header>
+  <main class="content h-[calc(100vh-80px)] overflow-y-auto">
     <router-outlet></router-outlet>
   </main>
 </div>

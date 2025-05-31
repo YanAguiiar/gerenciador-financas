@@ -1,27 +1,80 @@
-# GerenciadorFinancas
+# Gerenciador de Finanças Pessoais
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.17.
+Uma aplicação web moderna desenvolvida com Angular 17 para ajudar você a gerenciar suas finanças pessoais de forma eficiente e intuitiva.
 
-## Development server
+## 🚀 Tecnologias Utilizadas
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+- Angular 17.3.0
+- Angular Material UI
+- TailwindCSS
+- TypeScript
+- RxJS
 
-## Code scaffolding
+## 📋 Pré-requisitos
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Antes de começar, você precisa ter instalado em sua máquina:
 
-## Build
+- Node.js (versão 18 ou superior)
+- npm (geralmente vem com o Node.js)
+- Angular CLI (versão 17.3.17)
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+## 🔧 Instalação
 
-## Running unit tests
+1. Clone o repositório:
+```bash
+git clone https://github.com/YanAguiiar/gerenciador-financas
+cd gerenciador-financas
+```
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+2. Instale as dependências:
+```bash
+npm install
+```
 
-## Running end-to-end tests
+3. Inicie o servidor de desenvolvimento:
+```bash
+npm start ou ng serve
+```
+Ou
+```bash
+ng serve
+```
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+A aplicação estará disponível em `http://localhost:4200`
 
-## Further help
+## 🖥️ Funcionalidades Principais
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+- **Dashboard Financeiro**: Visualize seus gastos e receitas de forma clara e organizada
+- **Gestão de Despesas**: Cadastre e categorize suas despesas
+- **Controle de Receitas**: Registre todas as suas fontes de renda
+- **Categorização**: Organize suas transações por categorias
+- **Relatórios**: Acompanhe sua saúde financeira através de relatórios detalhados
+
+## 📱 Telas da Aplicação
+
+1. **Login/Registro**
+   - Autenticação segura de usuários
+   - Cadastro de novos usuários
+
+2. **Dashboard Principal**
+   - Visão geral das finanças
+   - Gráficos e indicadores principais
+   - Resumo mensal
+
+3. **Gestão de Transações**
+   - Cadastro de despesas e receitas
+   - Listagem de transações
+   - Filtros e busca avançada
+
+4. **Categorias**
+   - Gerenciamento de categorias
+   - Análise por categoria
+
+5. **Relatórios**
+   - Relatórios personalizados
+   - Análises comparativas
+
+## 🛠️ Scripts Disponíveis
+
+- `npm start`: Inicia o servidor de desenvolvimento
+- `npm run build`: Gera a versão de produção
