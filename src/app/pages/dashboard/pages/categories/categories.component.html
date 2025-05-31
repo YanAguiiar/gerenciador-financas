@@ -1,1 +1,68 @@
-<p>categories works!</p>
+<h2>Categorias</h2>
+
+<div class="add-form">
+  <input 
+    [(ngModel)]="newCategory" 
+    placeholder="Digite o nome da nova categoria" 
+    (keyup.enter)="createCategory()"
+  />
+  <button 
+    (click)="createCategory()" 
+    [disabled]="!newCategory.trim()"
+  >
+    Adicionar
+  </button>
+</div>
+
+<div *ngIf="isLoading" class="loading">
+  Carregando...
+</div>
+
+<div *ngIf="error" class="error-message">
+  {{ error }}
+</div>
+
+<ul class="category-list" *ngIf="!isLoading">
+  <li *ngFor="let category of categories">
+    <div *ngIf="editingId !== category.id">
+      {{ category.name }}
+      <div class="actions">
+        <button 
+          (click)="startEdit(category)" 
+          title="Editar"
+        >
+          Editar
+        </button>
+        <button 
+          (click)="deleteCategory(category.id)" 
+          title="Excluir"
+        >
+          Excluir
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="editingId === category.id" class="editing-form">
+      <input 
+        [(ngModel)]="editingName" 
+        placeholder="Nome da categoria"
+        (keyup.enter)="saveEdit()"
+      />
+      <div class="editing-buttons">
+        <button 
+          (click)="saveEdit()" 
+          [disabled]="!editingName.trim()"
+        >
+          Salvar
+        </button>
+        <button (click)="cancelEdit()">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<div *ngIf="!isLoading && categories.length === 0" class="empty-state">
+  Nenhuma categoria cadastrada.
+</div>

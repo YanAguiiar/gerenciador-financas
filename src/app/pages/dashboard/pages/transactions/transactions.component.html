@@ -1,1 +1,95 @@
-<p>transactions works!</p>
+<div class="p-6">
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-semibold text-gray-800">Transações</h2>
+    <button (click)="startNewTransaction()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+      <mat-icon>add</mat-icon>
+      Nova Transação
+    </button>
+  </div>
+
+  <!-- Formulário de Edição/Criação -->
+  <div *ngIf="isEditing" class="bg-white p-6 rounded-lg shadow-lg mb-6">
+    <h3 class="text-lg font-semibold mb-4">{{ editingTransaction.id ? 'Editar' : 'Nova' }} Transação</h3>
+    <form [formGroup]="transactionForm" (ngSubmit)="saveTransaction()" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="flex flex-col">
+        <label class="text-sm font-medium text-gray-700">Título</label>
+        <input formControlName="title" type="text" class="mt-1 p-2 border rounded-md">
+      </div>
+      
+      <div class="flex flex-col">
+        <label class="text-sm font-medium text-gray-700">Valor</label>
+        <input formControlName="value" type="number" class="mt-1 p-2 border rounded-md">
+      </div>
+
+      <div class="flex flex-col">
+        <label class="text-sm font-medium text-gray-700">Tipo</label>
+        <select formControlName="type" class="mt-1 p-2 border rounded-md">
+          <option value="RECEITA">Receita</option>
+          <option value="DESPESA">Despesa</option>
+        </select>
+      </div>
+
+      <div class="flex flex-col">
+        <label class="text-sm font-medium text-gray-700">Data</label>
+        <input formControlName="date" type="date" class="mt-1 p-2 border rounded-md">
+      </div>
+
+      <div class="flex flex-col">
+        <label class="text-sm font-medium text-gray-700">Categoria</label>
+        <select formControlName="category" class="mt-1 p-2 border rounded-md">
+          <option [value]="category.id" *ngFor="let category of categories">{{category.name}}</option>
+        </select>
+      </div>
+
+      <div class="md:col-span-2 flex gap-2 justify-end mt-4">
+        <button type="button" (click)="cancelEdit()" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-md">
+          Cancelar
+        </button>
+        <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">
+          Salvar
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Tabela de Transações -->
+  <div class="overflow-x-auto">
+    <table class="min-w-full bg-white rounded-lg overflow-hidden shadow-lg">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Título</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Valor</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categoria</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+        <tr *ngFor="let transaction of transactions">
+          <td class="px-6 py-4">{{transaction.title}}</td>
+          <td class="px-6 py-4" [ngClass]="{'text-green-600': transaction.type === 'RECEITA', 'text-red-600': transaction.type === 'DESPESA'}">
+            {{transaction.value | currency:'BRL'}}
+          </td>
+          <td class="px-6 py-4">
+            <span [ngClass]="{'bg-green-100 text-green-800': transaction.type === 'RECEITA', 'bg-red-100 text-red-800': transaction.type === 'DESPESA'}"
+                  class="px-2 py-1 text-xs rounded-full">
+              {{transaction.type === 'RECEITA' ? 'Receita' : 'Despesa'}}
+            </span>
+          </td>
+          <td class="px-6 py-4">{{transaction.date | date:'dd/MM/yyyy'}}</td>
+          <td class="px-6 py-4">{{getCategoryName(transaction.category)}}</td>
+          <td class="px-6 py-4">
+            <button (click)="editTransaction(transaction)" class="text-blue-600 hover:text-blue-800 mr-2">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button (click)="deleteTransaction(transaction.id)" class="text-red-600 hover:text-red-800">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
